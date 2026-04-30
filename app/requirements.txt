@@ -1,0 +1,13 @@
+beautifulsoup4==4.14.3
+curl_cffi==0.15.0
+fake_useragent==2.2.0
+loguru==0.5.3
+loguru==0.7.2
+minio==7.2.20
+mysql_connector_repackaged==0.3.1
+pyexecjs==1.5.1
+PyExecJS==1.5.1
+PyExecJS2==1.6.1
+python-dotenv==1.2.2
+redis==7.4.0
+Requests==2.33.1
