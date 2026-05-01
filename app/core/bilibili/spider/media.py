@@ -6,12 +6,17 @@ from pprint import pprint
 import random
 import re
 import subprocess
+import sys
 import time
 
 import execjs
 from loguru import logger
-from .api import BiliBiliApi
+sys.path.append(str(Path(__file__).parent.parent / "api"))
+sys.path.append(str(Path(__file__).parent))
+from video import BiliBiliVideoApi
 from .fetch import BiliBiliSpider
+from .utils import BiliBiliUtils    
+from grpc_tools import protoc
 
 
 class BiliBiliMedia(BiliBiliSpider):
@@ -214,7 +219,62 @@ class BiliBiliMedia(BiliBiliSpider):
             task_cnt += 1
             if task_cnt == 2:
                 break
+    
+    @staticmethod
+    def get_danmaku(url):
+        pid, _, oid = BiliBiliUtils.get_video_id(url, BiliBiliSpider.session)
+        api, params = BiliBiliVideoApi.get_danmaku(oid, pid)
+        params = BiliBiliUtils.get_wid_signature(params)
+        response = BiliBiliSpider.session.get(url=api, params=params)
+        print(response.status_code)
+        
+        # === 2. 计算文件路径（基于当前文件所在目录，避免运行目录不同导致找不到文件） ===
+
+        current_dir = str(Path(__file__).parent)
+        pb_path = Path(__file__).parent / 'bullet_screen.pb'
+        proto_path = Path(__file__).parent / 'dm.proto'
+        py_path = Path(__file__).parent / 'dm_pb2.py'
+
+
+        # === 3. 保存二进制数据 ===
+        with open(pb_path, 'wb') as f:
+            f.write(response.content)
+
+        # === 4. 自动编译 dm.proto（仅在需要时编译） ===
+        need_compile = (
+            not os.path.exists(py_path) or
+            os.path.getmtime(proto_path) > os.path.getmtime(py_path)
+        )
+        if need_compile:
+            print('编译 dm.proto ...')
+            protoc.main([
+                'grpc_tools.protoc',
+                f'--python_out={current_dir}',
+                f'--proto_path={current_dir}',
+                proto_path,
+            ])
+        
+
+        # import sys
+        # if current_dir not in sys.path:
+        #     sys.path.insert(0, current_dir)
+        import dm_pb2
+        
+        danmaku_seg = dm_pb2.DmSegMobileReply()
+        danmaku_seg.ParseFromString(response.content)
+        
+        # === 6. 输出弹幕 ===
+        print(f'\n一共 {len(danmaku_seg.elems)} 条弹幕\n')
+        for elem in danmaku_seg.elems:
+            print(f'时间: {elem.progress}ms | 内容: {elem.content}')
+        
+        # 把弹幕列表返回出去，方便外部使用
+        return danmaku_seg.elems
+        
 
 if __name__ == '__main__':
-    a = BiliBiliMedia()
-    a.get_one_media(url="https://www.bilibili.com/video/BV1uLWQzqEmj/?spm_id_from=333.337.search-card.all.click")
+    # a = BiliBiliMedia()
+    # a.get_one_media(url="https://www.bilibili.com/video/BV1uLWQzqEmj/?spm_id_from=333.337.search-card.all.click")
+    print(sys.path)
+    
+    print(current_dir)

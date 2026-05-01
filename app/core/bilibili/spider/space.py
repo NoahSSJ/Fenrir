@@ -6,7 +6,7 @@ from .utils import BiliBiliUtils
 # from .api import BiliBiliApi
 from .fetch import BiliBiliSpider
 from pathlib import Path
-sys.path.append(str(Path(__file__).parent / "api"))
+sys.path.append(str(Path(__file__).parent.parent / "api"))
 from space import BiliBiliSpaceApi
 
 class BiliBiliSpace():

@@ -77,7 +77,7 @@ class BiliBiliUtils():
         # pprint(wbi_key)
         wbi_key = {'wbiImgKey': '7cd084941338484aae1ad9425b84077c',
  'wbiSubKey': '4932caff0ff746eab6f01bf08b70ac45'}
-        js_path = Path(__file__).parent.parent.parent / "core" / "bilibili" / "signature" / "wid.js"
+        js_path = Path(__file__).parent.parent / "signature" / "wid.js"
         with open(js_path, mode='r', encoding='utf-8') as f:
             js_code = f.read()
         ctx = execjs.compile(js_code)
@@ -112,7 +112,7 @@ class BiliBiliUtils():
     # @deprecated("请改用 new_function")
     def get_video_id(url, session):
         """
-        Note: 获取指定视频的aid, bvid, cid
+        Note: 获取指定视频的aid/pid, bvid, cid/oid
         Args:
             url: 视频url
 
@@ -128,7 +128,7 @@ class BiliBiliUtils():
         aid  = re.search(r'"aid"\s*:\s*(\d+)', html).group(1)
         bvid = re.search(r'"bvid"\s*:\s*"([^"]+)"', html).group(1)
         cid  = re.search(r'"cid"\s*:\s*(\d+)', html).group(1)
-        print(aid, bvid, cid)
+        # print(aid, bvid, cid)
         return aid, bvid, cid
     
     # @staticmethod
