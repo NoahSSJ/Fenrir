@@ -16,7 +16,7 @@ sys.path.append(str(Path(__file__).parent))
 from video import BiliBiliVideoApi
 from .fetch import BiliBiliSpider
 from .utils import BiliBiliUtils    
-from grpc_tools import protoc
+# from grpc_tools import protoc
 
 
 class BiliBiliMedia(BiliBiliSpider):

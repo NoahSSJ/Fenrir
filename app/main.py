@@ -18,4 +18,4 @@ if __name__ == '__main__':
 
     # a = BiliBiliSpace.get_acc_info('https://space.bilibili.com/1166997747/upload/video', BiliBiliSpider.session)
     # a = BiliBiliMedia().get_danmaku('https://www.bilibili.com/video/BV1fMQZB9Euz/?spm_id_from=333.337.search-card.all.click&vd_source=cd2f30c4c2b17931e5fe4b95752072ee')
-    BiliBiliLiveSpider.get_live_info(BiliBiliSpider.session)
+    # BiliBiliLiveSpider.get_live_info(BiliBiliSpider.session)
